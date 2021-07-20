@@ -45,7 +45,7 @@
     "stylelint": "^13.7.0",
     "stylelint-webpack-plugin": "^2.1.0",
     "swagger-ui-react": "^3.32.5",
-    "urijs": "^1.19.2",
+    "urijs": "^1.19.7",
     "url-loader": "^4.1.0",
     "vue": "^2.6.12",
     "vue-loader": "^15.9.3",
