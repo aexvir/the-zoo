@@ -39,11 +39,12 @@ class GlobalChecklistsView(ListView):
                 "name_slug": service.name_slug,
                 "completed_checklist_steps": service.checkmarks.count,
                 "total_checklist_steps": sum(
-                    [len(steps) for tag, steps in get_service_steps(service)]
+                    len(steps) for tag, steps in get_service_steps(service)
                 ),
             }
             for service in self.get_queryset()
         ]
+
         return context
 
 
