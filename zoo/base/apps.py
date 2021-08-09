@@ -24,7 +24,7 @@ class BaseConfig(AppConfig):
 
         celery_app.add_periodic_task(timedelta(hours=1), repos_tasks.sync_repos)
         celery_app.add_periodic_task(timedelta(hours=1), repos_tasks.schedule_pulls)
-        celery_app.add_periodic_task(timedelta(days=1), repos_tasks.sync_zoo_file)
+        celery_app.add_periodic_task(timedelta(days=1), repos_tasks.sync_entity_file)
         celery_app.add_periodic_task(
             timedelta(hours=1), service_tasks.schedule_sentry_sync
         )

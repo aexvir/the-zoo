@@ -14,9 +14,7 @@
 {% endblock %}
 
 {% block navtitle %}
-  {% with project_delete_view='service_delete' icon='cogs' to_url='/services' header=object.name project_update_view='service_update' subheader='owned by '|add:object.owner %}
     {{ block.super }}
-  {% endwith %}
 {% endblock %}
 
 {% block content %}
@@ -236,7 +234,7 @@
     {% include "datacenters/infra_overview.html" with datacenters=object.datacenters.all only %}
   {% endif %}
 
-  {% if object.links %}
+  {% if object.links.all %}
     <div class="ui fluid project-detail segment">
       <h3 class="ui marginless header">
         <div class="content">

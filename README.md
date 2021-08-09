@@ -102,45 +102,111 @@ you can run: `TEST_DATABASE_URL=postgres://... TOX_TESTENV_PASSENV=TEST_DATABASE
 
 ## Configuration for repositories
 
-Repositories scanned by the Zoo may contain the `.zoo.yml` file. This file contains additional
+Repositories scanned by the Zoo may contain the `.entities.yml` file. This file contains additional
 information about the scanned repository and how and where it's used in production. If the Zoo
-finds this file in the root of the project, it will read it and create a Service or a Library within
-the Zoo with the provided information based on the collected data automatically.
-Otherwise the data have to be added to the Zoo manually.
+finds this file in the root of the project, it will read it and create specified Entities within
+the Zoo with the provided information based on the collected data automatically. Currently The Zoo
+is supporting 3 types of Entities:
+
+- Base Entity - schema can be found in [component_base.py](zoo/entities/yaml_definitions/component_base.yaml)
+- Service Entity - schema can be found in [component_service.py](zoo/entities/yaml_definitions/component_service.yaml)
+- Library Entity - schema can be found in [component_library.py](zoo/entities/yaml_definitions/component_library.yaml)
 
 Here is an example of this file:
 
 ```yaml
-type: service
-name: hello-world-service
-owner: booking
-impact: profit
-status: beta
-docs_url: 'https://example.com/hello-world-service'
-slack_channel: 'http://example.com/slack/channel'
-sentry_project: 'http://example.com/sentry/hello-world-service'
-sonarqube_project: hello-world-service
-pagerduty_url: 'https://example.com/pager/hello-world-service'
-tags:
-    - tag1
-    - tag2
-    - tag3
-environments:
-    -
-        name: staging
-        dashboard_url: 'https://staging.example.com/dashboard'
-        service_urls:
-            - 'https://staging.example.com/service'
-        health_check_url: 'https://staging.example.com/health_check'
-    -
-        name: production
-        dashboard_url: 'https://production.example.com/dashboard'
-        service_urls:
-            - 'https://production.example.com/service'
-        health_check_url: 'https://production.example.com/health_check'
+apiVersion: v1alpha1
+kind: component
+metadata:
+    name: zoo-prod-db
+    label: The Zoo Production Database
+    owner: platform-software
+    group:
+      product_owner: John
+      project_owner: Doe
+      maintainers:
+        - thor@avengers.com
+        - hulk@avengers.com
+    description: Production DB for The Zoo
+    tags:
+      - Django
+      - Production
+      - Service Catalog
+    links:
+      - name: Datadog
+        url: https://dashboard.datadog.com
+        icon: datadog
+      - name: Sentry
+        url: https://sentry.kiwi.com
+spec:
+    type: database
+---
+apiVersion: v1alpha1
+kind: component
+metadata:
+    name: the-zoo
+    label: The Zoo
+    owner: platform-software
+    group:
+      product_owner: John
+      project_owner: Doe
+      maintainers:
+        - loki@avengers.com
+        - iron-man@avengers.com
+    description: Application providing service catalog and much more
+    tags:
+      - Zoo
+      - catalog
+      - production
+    links:
+    - name: Datadog
+      url: https://datadog.zoo.com
+spec:
+    type: service
+    environments:
+    - name: production
+      dashboard_url: https://dashboard.datadog.com
+      health_check_url: https://zoo.health.com
+      service_urls:
+        - https://zoo.com
+    - name: sandbox
+      dashboard_url: https://dashboard.datadog.sandbox.com
+      health_check_url: https://zoo.health.sandbox.com
+      service_urls:
+        - https://zoo.sandbox.com
+    impact: employees
+    integrations:
+        pagerduty_service: pagerduty_service1234
+        sentry_project: sentry project 15234
+    lifecycle: production
+---
+apiVersion: v1alpha1
+kind: component
+metadata:
+    name: superfast-sort
+    label: Super Fast Sort
+    owner: platform-software
+    group:
+      product_owner: Sort
+      project_owner: Maker
+      maintainers:
+        - sort@maker.com
+    description: Library providing super fast sort
+    tags:
+      - Sort
+      - Python
+    links:
+    - name: Datadog
+      url: https://dashboard.datadog.com
+    - name: Sentry
+      url: https://sentry.skypicker.com
+spec:
+    type: library
+    impact: employees
+    integrations:
+      sonarqube_project: sonarqube
+    lifecycle: production
 ```
-
-Full schema for this file can be found in [zoo_yml.py](zoo/repos/zoo_yml.py)
 
 ## Documentation
 

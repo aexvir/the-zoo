@@ -1,17 +1,15 @@
 import re
 
 import structlog
-from django.core.exceptions import SuspiciousOperation
 from django.db.models import Q
 from django.http import Http404
-from django.urls import reverse_lazy
 from django.views import generic as generic_views
 from djangoql.exceptions import DjangoQLError
 from djangoql.queryset import apply_search
 
 from ..auditing.models import Issue
 from ..checklists.steps import STEPS
-from . import forms, models
+from . import models
 
 log = structlog.get_logger()
 
@@ -29,33 +27,6 @@ class LibraryMixin:
 
         except queryset.model.DoesNotExist:
             raise Http404("Library.DoesNotExist")
-
-
-class LibraryCreate(generic_views.CreateView):
-    form_class = forms.LibraryForm
-    model = form_class.Meta.model
-
-
-class LibraryDelete(generic_views.DeleteView):
-    model = models.Library
-    success_url = reverse_lazy("library_list")
-
-    def get_object(self, queryset=None):
-        owner_slug = self.kwargs.get("owner_slug")
-        name_slug = self.kwargs.get("name_slug")
-
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        if owner_slug is None or name_slug is None:
-            raise SuspiciousOperation(
-                "LibraryDelete view must be called with owner_slug and name_slug"
-            )
-
-        try:
-            return queryset.get(owner_slug=owner_slug, name_slug=name_slug)
-        except self.model.DoesNotExist:
-            raise Http404(f"Library {owner_slug}/{name_slug} does not exist")
 
 
 class LibraryDetail(LibraryMixin, generic_views.DetailView):
@@ -136,8 +107,3 @@ class LibraryList(generic_views.ListView):
 
         context["project_links"] = ["Support", "Repository", "Documentation"]
         return context
-
-
-class LibraryUpdate(LibraryMixin, generic_views.UpdateView):
-    form_class = forms.LibraryForm
-    model = form_class.Meta.model

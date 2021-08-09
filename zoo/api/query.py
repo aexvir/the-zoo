@@ -6,8 +6,10 @@ from graphene import relay
 
 from ..analytics.models import Dependency, DependencyType, DependencyUsage
 from ..auditing.models import Issue
+from ..entities.models import Entity, Group, Link
 from ..globalsearch.indexer import IndexType
 from ..globalsearch.meili_client import meili_client
+from ..libraries.models import Library
 from ..repos.models import Repository
 from ..services.models import Service
 from . import types
@@ -47,6 +49,22 @@ class Query(graphene.ObjectType):
         description="List of search results. Returns first 10 nodes if pagination is not specified.",
         search_query=graphene.String(),
         search_type=SearchTypeEnum(),
+    )
+    all_entities = relay.ConnectionField(
+        types.EntityConnection,
+        description="List of entities. Returns first 10 nodes if pagination is not specified.",
+    )
+    all_libraries = relay.ConnectionField(
+        types.LibraryConnection,
+        description="List of libraries. Returns first 10 nodes if pagination is not specified.",
+    )
+    all_links = relay.ConnectionField(
+        types.LinkConnection,
+        description="List of links. Returns first 10 nodes if pagination is not specified.",
+    )
+    all_groups = relay.ConnectionField(
+        types.GroupConnection,
+        description="List of groups. Returns first 10 nodes if pagination is not specified.",
     )
 
     def resolve_all_issues(self, info, **kwargs):
@@ -153,6 +171,80 @@ class Query(graphene.ObjectType):
             edges.append(types.DependencyUsageConnection.Edge(node=node, cursor=cursor))
 
         return types.DependencyUsageConnection(
+            page_info=page_info, edges=edges, total_count=total
+        )
+
+    def resolve_all_entites(self, info, **kwargs):
+        paginator = Paginator(**kwargs)
+        total = Entity.objects.all().count()
+        page_info = paginator.get_page_info(total)
+        edges = []
+
+        for i, entity in enumerate(
+            Entity.objects.all()[
+                paginator.slice_from : paginator.slice_to  # Ignore PEP8Bear
+            ]
+        ):
+            cursor = paginator.get_edge_cursor(i + 1)
+            node = types.Entity.from_db(entity)
+            edges.append(types.EntityConnection.Edge(node=node, cursor=cursor))
+
+        return types.EntityConnection(
+            page_info=page_info, edges=edges, total_count=total
+        )
+
+    def resolve_all_links(self, info, **kwargs):
+        paginator = Paginator(**kwargs)
+        total = Link.objects.all().count()
+        page_info = paginator.get_page_info(total)
+        edges = []
+
+        for i, link in enumerate(
+            Link.objects.all()[
+                paginator.slice_from : paginator.slice_to  # Ignore PEP8Bear
+            ]
+        ):
+            cursor = paginator.get_edge_cursor(i + 1)
+            node = types.Link.from_db(link)
+            edges.append(types.LinkConnection.Edge(node=node, cursor=cursor))
+
+        return types.LinkConnection(page_info=page_info, edges=edges, total_count=total)
+
+    def resolve_all_libraries(self, info, **kwargs):
+        paginator = Paginator(**kwargs)
+        total = Library.objects.all().count()
+        page_info = paginator.get_page_info(total)
+        edges = []
+
+        for i, library in enumerate(
+            Library.objects.all()[
+                paginator.slice_from : paginator.slice_to  # Ignore PEP8Bear
+            ]
+        ):
+            cursor = paginator.get_edge_cursor(i + 1)
+            node = types.Library.from_db(library)
+            edges.append(types.LibraryConnection.Edge(node=node, cursor=cursor))
+
+        return types.LibraryConnection(
+            page_info=page_info, edges=edges, total_count=total
+        )
+
+    def resolve_all_groups(self, info, **kwargs):
+        paginator = Paginator(**kwargs)
+        total = Group.objects.all().count()
+        page_info = paginator.get_page_info(total)
+        edges = []
+
+        for i, group in enumerate(
+            Group.objects.all()[
+                paginator.slice_from : paginator.slice_to  # Ignore PEP8Bear
+            ]
+        ):
+            cursor = paginator.get_edge_cursor(i + 1)
+            node = types.Group.from_db(group)
+            edges.append(types.GroupConnection.Edge(node=node, cursor=cursor))
+
+        return types.GroupConnection(
             page_info=page_info, edges=edges, total_count=total
         )
 

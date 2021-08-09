@@ -6,6 +6,8 @@ from graphene.types.json import JSONString
 from ..analytics import models as analytics_models
 from ..auditing import check_discovery
 from ..auditing import models as auditing_models
+from ..entities import models as entities_models
+from ..libraries import models as libraries_models
 from ..repos import models as repos_models
 from ..services import models as services_models
 from .paginator import Paginator
@@ -95,11 +97,63 @@ class Environment(graphene.ObjectType):
         interfaces = (relay.Node,)
 
 
+class Library(graphene.ObjectType):
+    owner = graphene.String()
+    name = graphene.String()
+    lifecycle = graphene.String()
+    impact = graphene.String()
+    slack_channel = graphene.String()
+    sonarqube_project = graphene.String()
+    repository = graphene.Field(lambda: Repository)
+    docs_url = graphene.String()
+    library_url = graphene.String()
+
+    @classmethod
+    def from_db(cls, library):
+        return cls(
+            owner=library.owner,
+            name=library.name,
+            lifecycle=library.lifecycle,
+            impact=library.impact,
+            slack_channel=library.slack_channel,
+            sonarqube_project=library.sonarqube_project,
+            repository=library.repository_id,
+            docs_url=library.docs_url,
+            library_url=library.library_url,
+        )
+
+    @classmethod
+    def get_node(cls, info, library_id):
+        try:
+            library = libraries_models.Library.objects.get(id=library_id)
+            return cls.from_db(library)
+        except ObjectDoesNotExist:
+            return None
+
+    def resolve_repository(self, info):
+        try:
+            return Repository.from_db(
+                repos_models.Repository.objects.get(id=self.repository)
+            )
+        except ObjectDoesNotExist:
+            return None
+
+    class Meta:
+        interfaces = (relay.Node,)
+
+
+class LibraryConnection(relay.Connection):
+    total_count = graphene.Int()
+
+    class Meta:
+        node = Library
+
+
 class Link(graphene.ObjectType):
     name = graphene.String()
     url = graphene.List(graphene.String)
     icon = graphene.String()
-    service = graphene.Field(lambda: Service)
+    entity = graphene.Field(lambda: Entity)
 
     @classmethod
     def from_db(cls, link):
@@ -108,32 +162,25 @@ class Link(graphene.ObjectType):
             name=link.name,
             url=link.url,
             icon=link.icon,
-            service=link.service_id,
+            entity=link.entity_id,
         )
 
     @classmethod
     def get_node(cls, info, link_id):
         try:
-            link = services_models.Link.objects.get(id=link_id)
+            link = entities_models.Link.objects.get(id=link_id)
             return cls.from_db(link)
         except ObjectDoesNotExist:
             return None
 
-    def resolve_service(self, info):
+    def resolve_entity(self, info):
         try:
-            return Service.from_db(services_models.Service.objects.get(id=self.service))
+            return Entity.from_db(entities_models.Entity.objects.get(id=self.entity))
         except ObjectDoesNotExist:
             return None
 
     class Meta:
         interfaces = (relay.Node,)
-
-
-class EnvironmentConnection(relay.Connection):
-    total_count = graphene.Int()
-
-    class Meta:
-        node = Environment
 
 
 class LinkConnection(relay.Connection):
@@ -143,17 +190,138 @@ class LinkConnection(relay.Connection):
         node = Link
 
 
+class Group(graphene.ObjectType):
+    product_owner = graphene.String()
+    project_owner = graphene.String()
+    maintainers = graphene.List(graphene.String)
+
+    class Meta:
+        interfaces = (relay.Node,)
+
+    @classmethod
+    def from_db(cls, group):
+        return cls(
+            id=group.id,
+            product_owner=group.product_owner,
+            project_owner=group.project_owner,
+            maintainers=group.maintainers,
+        )
+
+    @classmethod
+    def get_node(cls, info, group_id):
+        try:
+            group = entities_models.Group.objects.get(id=group_id)
+            return cls.from_db(group)
+        except ObjectDoesNotExist:
+            return None
+
+
+class GroupConnection(relay.Connection):
+    total_count = graphene.Int()
+
+    class Meta:
+        node = Group
+
+
+class Entity(graphene.ObjectType):
+    name = graphene.String()
+    label = graphene.String()
+    kind = graphene.String()
+    type = graphene.String()
+    owner = graphene.String()
+    description = graphene.String()
+    group = graphene.Field(lambda: Group)
+    source = graphene.Field(lambda: Repository)
+    service = graphene.Field(lambda: Service)
+    library = graphene.Field(lambda: Library)
+    all_links = relay.ConnectionField(LinkConnection)
+
+    @classmethod
+    def from_db(cls, entity):
+        return cls(
+            id=entity.id,
+            name=entity.name,
+            label=entity.label,
+            owner=entity.owner,
+            description=entity.description,
+            group=entity.group_id,
+            service=entity.service_id,
+            library=entity.library_id,
+            all_links=entity.links,
+        )
+
+    @classmethod
+    def get_node(cls, info, entity_id):
+        try:
+            environment = services_models.Entity.objects.get(id=entity_id)
+            return cls.from_db(environment)
+        except ObjectDoesNotExist:
+            return None
+
+    def resolve_service(self, info):
+        try:
+            return Service.from_db(services_models.Service.objects.get(id=self.service))
+        except ObjectDoesNotExist:
+            return None
+
+    def resolve_library(self, info):
+        try:
+            return Library.from_db(
+                libraries_models.Library.objects.get(id=self.library)
+            )
+        except ObjectDoesNotExist:
+            return None
+
+    def resolve_group(self, info):
+        try:
+            return Group.from_db(entities_models.Group.objects.get(id=self.group))
+        except ObjectDoesNotExist:
+            return None
+
+    def resolve_all_links(self, info, **kwargs):
+        paginator = Paginator(**kwargs)
+        edges = []
+        filtered_links = entities_models.Link.objects.filter(entity_id=self.id)
+        total = filtered_links.count()
+        page_info = paginator.get_page_info(total)
+
+        for i, issue in enumerate(
+            filtered_links[paginator.slice_from : paginator.slice_to]  # Ignore PEP8Bear
+        ):
+            cursor = paginator.get_edge_cursor(i + 1)
+            node = Link.from_db(issue)
+            edges.append(LinkConnection.Edge(node=node, cursor=cursor))
+
+        return LinkConnection(page_info=page_info, edges=edges, total_count=total)
+
+    class Meta:
+        interfaces = (relay.Node,)
+
+
+class EntityConnection(relay.Connection):
+    total_count = graphene.Int()
+
+    class Meta:
+        node = Entity
+
+
+class EnvironmentConnection(relay.Connection):
+    total_count = graphene.Int()
+
+    class Meta:
+        node = Environment
+
+
 class Service(graphene.ObjectType):
     owner = graphene.String()
     name = graphene.String()
-    status = graphene.String()
+    lifecycle = graphene.String()
     impact = graphene.String()
     repository = graphene.Field(lambda: Repository)
     slack_channel = graphene.String()
     pagerduty_service = graphene.String()
     docs_url = graphene.String()
     all_environments = relay.ConnectionField(EnvironmentConnection)
-    all_links = relay.ConnectionField(LinkConnection)
 
     @classmethod
     def from_db(cls, service):
@@ -161,7 +329,7 @@ class Service(graphene.ObjectType):
             id=service.id,
             owner=service.owner,
             name=service.name,
-            status=service.status,
+            lifecycle=service.lifecycle,
             impact=service.impact,
             slack_channel=service.slack_channel,
             pagerduty_service=service.pagerduty_service,

@@ -7,16 +7,6 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
-snapshots['test_empty 1'] = {
-    'data': {
-        'allServices': {
-            'edges': [
-            ],
-            'totalCount': 0
-        }
-    }
-}
-
 snapshots['test_all 1'] = {
     'data': {
         'allServices': {
@@ -26,11 +16,11 @@ snapshots['test_all 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZTox',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'name': 'martinez',
                         'owner': 'michaelbennett',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 },
                 {
@@ -38,11 +28,11 @@ snapshots['test_all 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZToy',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'name': 'alex',
                         'owner': 'amstrong',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 },
                 {
@@ -50,11 +40,11 @@ snapshots['test_all 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZToz',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'name': 'artinez',
                         'owner': 'bennett',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 },
                 {
@@ -62,11 +52,11 @@ snapshots['test_all 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZTo0',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'name': 'john',
                         'owner': 'benneto',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 },
                 {
@@ -74,11 +64,11 @@ snapshots['test_all 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZToxMg==',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'name': 'simmons-mitchell',
                         'owner': 'dedward',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 }
             ],
@@ -93,108 +83,12 @@ snapshots['test_all 1'] = {
     }
 }
 
-snapshots['test_with_repository 1'] = {
+snapshots['test_empty 1'] = {
     'data': {
         'allServices': {
             'edges': [
-                {
-                    'node': {
-                        'docsUrl': 'https://docsurl',
-                        'id': 'U2VydmljZTox',
-                        'impact': 'profit',
-                        'name': 'martinez',
-                        'owner': 'michaelbennett',
-                        'pagerdutyService': '/services',
-                        'repository': {
-                            'name': 'thiwer',
-                            'owner': 'jasckson',
-                            'remoteId': 239,
-                            'url': 'https://gitlab.com/thiwer/thiwer'
-                        },
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
-                    }
-                },
-                {
-                    'node': {
-                        'docsUrl': 'https://docsurl',
-                        'id': 'U2VydmljZToy',
-                        'impact': 'profit',
-                        'name': 'alex',
-                        'owner': 'amstrong',
-                        'pagerdutyService': '/services',
-                        'repository': {
-                            'name': 'farel',
-                            'owner': 'colisn',
-                            'remoteId': 99,
-                            'url': 'https://gitlab.com/farel/colins'
-                        },
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
-                    }
-                },
-                {
-                    'node': {
-                        'docsUrl': 'https://docsurl',
-                        'id': 'U2VydmljZToz',
-                        'impact': 'profit',
-                        'name': 'artinez',
-                        'owner': 'bennett',
-                        'pagerdutyService': '/services',
-                        'repository': {
-                            'name': 'Amstrong',
-                            'owner': 'Daniel',
-                            'remoteId': 9234,
-                            'url': 'https://gitlab.com/daniel/amstrong'
-                        },
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
-                    }
-                },
-                {
-                    'node': {
-                        'docsUrl': 'https://docsurl',
-                        'id': 'U2VydmljZTo0',
-                        'impact': 'profit',
-                        'name': 'john',
-                        'owner': 'benneto',
-                        'pagerdutyService': '/services',
-                        'repository': {
-                            'name': 'blanc',
-                            'owner': 'josh',
-                            'remoteId': 349,
-                            'url': 'https://gitlab.com/josh/blanc'
-                        },
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
-                    }
-                },
-                {
-                    'node': {
-                        'docsUrl': 'https://docsurl',
-                        'id': 'U2VydmljZToxMg==',
-                        'impact': 'profit',
-                        'name': 'simmons-mitchell',
-                        'owner': 'dedward',
-                        'pagerdutyService': '/services',
-                        'repository': {
-                            'name': 'leblanc',
-                            'owner': 'imosley',
-                            'remoteId': 990,
-                            'url': 'https://gitlab.com/schultzcarolyn/leblanc'
-                        },
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
-                    }
-                }
             ],
-            'pageInfo': {
-                'endCursor': 'NQ==',
-                'hasNextPage': False,
-                'hasPreviousPage': False,
-                'startCursor': 'MQ=='
-            },
-            'totalCount': 5
+            'totalCount': 0
         }
     }
 }
@@ -208,10 +102,10 @@ snapshots['test_first 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZTox',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'owner': 'michaelbennett',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 },
                 {
@@ -219,10 +113,10 @@ snapshots['test_first 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZToy',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'owner': 'amstrong',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 },
                 {
@@ -230,10 +124,10 @@ snapshots['test_first 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZToz',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'owner': 'bennett',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 }
             ],
@@ -257,10 +151,10 @@ snapshots['test_first_after 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZToy',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'owner': 'amstrong',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 },
                 {
@@ -268,10 +162,10 @@ snapshots['test_first_after 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZToz',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'owner': 'bennett',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 }
             ],
@@ -280,22 +174,6 @@ snapshots['test_first_after 1'] = {
                 'hasNextPage': True,
                 'hasPreviousPage': True,
                 'startCursor': 'Mg=='
-            },
-            'totalCount': 5
-        }
-    }
-}
-
-snapshots['test_last_before 1'] = {
-    'data': {
-        'allServices': {
-            'edges': [
-            ],
-            'pageInfo': {
-                'endCursor': None,
-                'hasNextPage': False,
-                'hasPreviousPage': False,
-                'startCursor': None
             },
             'totalCount': 5
         }
@@ -320,6 +198,22 @@ snapshots['test_last 1'] = {
             ]
         }
     ]
+}
+
+snapshots['test_last_before 1'] = {
+    'data': {
+        'allServices': {
+            'edges': [
+            ],
+            'pageInfo': {
+                'endCursor': None,
+                'hasNextPage': False,
+                'hasPreviousPage': False,
+                'startCursor': None
+            },
+            'totalCount': 5
+        }
+    }
 }
 
 snapshots['test_with_environment 1'] = {
@@ -364,11 +258,11 @@ snapshots['test_with_environment 1'] = {
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZTox',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'name': 'martinez',
                         'owner': 'michaelbennett',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'slackChannel': 'https://slackchannel'
                     }
                 }
             ],
@@ -383,49 +277,108 @@ snapshots['test_with_environment 1'] = {
     }
 }
 
-snapshots['test_with_links 1'] = {
+snapshots['test_with_repository 1'] = {
     'data': {
         'allServices': {
             'edges': [
                 {
                     'node': {
-                        'allLinks': None,
                         'docsUrl': 'https://docsurl',
                         'id': 'U2VydmljZTox',
                         'impact': 'profit',
+                        'lifecycle': 'fixed',
                         'name': 'martinez',
                         'owner': 'michaelbennett',
                         'pagerdutyService': '/services',
-                        'slackChannel': 'https://slackchannel',
-                        'status': 'fixed'
+                        'repository': {
+                            'name': 'thiwer',
+                            'owner': 'jasckson',
+                            'remoteId': 239,
+                            'url': 'https://gitlab.com/thiwer/thiwer'
+                        },
+                        'slackChannel': 'https://slackchannel'
+                    }
+                },
+                {
+                    'node': {
+                        'docsUrl': 'https://docsurl',
+                        'id': 'U2VydmljZToy',
+                        'impact': 'profit',
+                        'lifecycle': 'fixed',
+                        'name': 'alex',
+                        'owner': 'amstrong',
+                        'pagerdutyService': '/services',
+                        'repository': {
+                            'name': 'farel',
+                            'owner': 'colisn',
+                            'remoteId': 99,
+                            'url': 'https://gitlab.com/farel/colins'
+                        },
+                        'slackChannel': 'https://slackchannel'
+                    }
+                },
+                {
+                    'node': {
+                        'docsUrl': 'https://docsurl',
+                        'id': 'U2VydmljZToz',
+                        'impact': 'profit',
+                        'lifecycle': 'fixed',
+                        'name': 'artinez',
+                        'owner': 'bennett',
+                        'pagerdutyService': '/services',
+                        'repository': {
+                            'name': 'Amstrong',
+                            'owner': 'Daniel',
+                            'remoteId': 9234,
+                            'url': 'https://gitlab.com/daniel/amstrong'
+                        },
+                        'slackChannel': 'https://slackchannel'
+                    }
+                },
+                {
+                    'node': {
+                        'docsUrl': 'https://docsurl',
+                        'id': 'U2VydmljZTo0',
+                        'impact': 'profit',
+                        'lifecycle': 'fixed',
+                        'name': 'john',
+                        'owner': 'benneto',
+                        'pagerdutyService': '/services',
+                        'repository': {
+                            'name': 'blanc',
+                            'owner': 'josh',
+                            'remoteId': 349,
+                            'url': 'https://gitlab.com/josh/blanc'
+                        },
+                        'slackChannel': 'https://slackchannel'
+                    }
+                },
+                {
+                    'node': {
+                        'docsUrl': 'https://docsurl',
+                        'id': 'U2VydmljZToxMg==',
+                        'impact': 'profit',
+                        'lifecycle': 'fixed',
+                        'name': 'simmons-mitchell',
+                        'owner': 'dedward',
+                        'pagerdutyService': '/services',
+                        'repository': {
+                            'name': 'leblanc',
+                            'owner': 'imosley',
+                            'remoteId': 990,
+                            'url': 'https://gitlab.com/schultzcarolyn/leblanc'
+                        },
+                        'slackChannel': 'https://slackchannel'
                     }
                 }
             ],
             'pageInfo': {
-                'endCursor': 'MQ==',
+                'endCursor': 'NQ==',
                 'hasNextPage': False,
                 'hasPreviousPage': False,
                 'startCursor': 'MQ=='
             },
-            'totalCount': 1
+            'totalCount': 5
         }
-    },
-    'errors': [
-        {
-            'locations': [
-                {
-                    'column': 13,
-                    'line': 15
-                }
-            ],
-            'message': 'Resolved value from the connection field have to be iterable or instance of LinkConnection. Received "None"',
-            'path': [
-                'allServices',
-                'edges',
-                0,
-                'node',
-                'allLinks'
-            ]
-        }
-    ]
+    }
 }

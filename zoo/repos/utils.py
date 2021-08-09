@@ -157,3 +157,13 @@ def openapi_definition(repository, request=None, repo_path=None):
 
     log.info("repos.utils.openapi.done", repo=repository, specs=len(specs))
     return list(filter(None, specs))
+
+
+def delete_none(_dict):
+    for key, value in list(_dict.items()):
+        if isinstance(value, dict):
+            delete_none(value)
+        elif value is None:
+            _dict.pop(key)
+
+    return _dict

@@ -1,14 +1,14 @@
 from django.core.management.base import BaseCommand
 
-from zoo.repos import github, gitlab, zoo_yml
+from zoo.repos import entities_yaml, github, gitlab
 from zoo.services.models import Service
 
 
 class Command(BaseCommand):
-    help = "generate .zoo.yml file for all services in the database that do not have it"
+    help = "generate .entities.yml file for all entities in the database that do not have it"
 
-    ZOO_YML = ".zoo.yml"
-    ZOO_COMMIT_MSG = "feat(zoo): generate .zoo.yml file"
+    ENTITY_YML = ".entities.yml"
+    ENTITY_COMMIT_MSG = "feat(zoo): generate .entities.yml file"
 
     def handle(self, *args, **options):
         for service in Service.objects.all():
@@ -19,17 +19,17 @@ class Command(BaseCommand):
             if not provider:
                 continue
 
-            if self.file_exists(remote_id, Command.ZOO_YML, provider):
+            if self.file_exists(remote_id, Command.ENTITY_YML, provider):
                 continue
 
-            yml = zoo_yml.generate(service)
+            yml = entities_yaml.generate(service)
             actions = [
-                {"action": "create", "content": yml, "file_path": Command.ZOO_YML}
+                {"action": "create", "content": yml, "file_path": Command.ENTITY_YML}
             ]
             branch = "master"
 
             provider.create_remote_commit(
-                remote_id, Command.ZOO_COMMIT_MSG, actions, branch, provider
+                remote_id, Command.ENTITY_COMMIT_MSG, actions, branch, provider
             )
 
     def get_provider(self, provider):

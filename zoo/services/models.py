@@ -10,7 +10,7 @@ from django.urls import reverse
 from djangoql.schema import DjangoQLSchema
 
 from . import ratings
-from .constants import EnviromentType, Impact, SentryIssueCategory, Status
+from .constants import EnviromentType, Impact, Lifecycle, SentryIssueCategory
 from .managers import SentryIssueManager
 
 
@@ -26,8 +26,8 @@ class Service(models.Model):
         blank=True,
         help_text="Short description of this service",
     )
-    status = models.CharField(
-        choices=((item.value, item.value) for item in Status),
+    lifecycle = models.CharField(
+        choices=((item.value, item.value) for item in Lifecycle),
         null=True,
         blank=True,
         max_length=100,
@@ -57,7 +57,7 @@ class Service(models.Model):
         blank=True,
         related_name="services",
     )
-    pagerduty_service = models.CharField(max_length=80, default="", blank=True)
+    pagerduty_service = models.CharField(max_length=80, null=True, blank=True)
     docs_url = models.URLField(max_length=500, null=True, blank=True)
     owner_slug = models.SlugField(max_length=140)
     name_slug = models.SlugField(max_length=140)
@@ -246,23 +246,6 @@ class SentryIssueStats(models.Model):
     count = models.IntegerField()
     issue = models.ForeignKey(
         "services.SentryIssue", on_delete=models.CASCADE, related_name="stats"
-    )
-
-
-class Link(models.Model):
-    name = models.CharField(max_length=32)
-    icon = models.CharField(
-        max_length=16,
-        null=True,
-        blank=True,
-        help_text="https://fomantic-ui.com/elements/icon.html",
-    )
-    url = models.URLField()
-    service = models.ForeignKey(
-        Service,
-        on_delete=models.CASCADE,
-        related_name="links",
-        related_query_name="link",
     )
 
 

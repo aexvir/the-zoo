@@ -113,6 +113,7 @@ INSTALLED_APPS = [
     "zoo.repos.apps.ReposConfig",
     "zoo.resources.apps.ResourcesConfig",
     "zoo.services.apps.ServicesConfig",
+    "zoo.entities.apps.EntitiesConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -247,9 +248,6 @@ SONARQUBE_TOKEN = env("ZOO_SONARQUBE_TOKEN")
 ZOO_AUDITING_CHECKS = env("ZOO_AUDITING_CHECKS")
 ZOO_AUDITING_DROP_ISSUES = env("ZOO_AUDITING_DROP_ISSUES")
 
-ZOO_YAML_FILE = env("ZOO_YAML_FILE")
-ZOO_YAML_DEFAULT_REF = env("ZOO_YAML_DEFAULT_REF")
-
 AWS_CONFIG = env("AWS_CONFIG")
 AWS_CONFIG_FILE = env("AWS_CONFIG_FILE")
 AWS_CREDENTIALS = env("AWS_SHARED_CREDENTIALS")
@@ -273,3 +271,6 @@ REMOTE_DATA_OWNERS = env("ZOO_REMOTE_DATA_OWNERS")
 MEILI_MASTER_KEY = env("MEILI_MASTER_KEY")
 MEILI_HOST = env("MEILI_HOST")
 logs.configure_structlog(DEBUG)
+
+ZOO_ALLOWD_ENTITY_KINDS = ["component"]
+ZOO_ALLOWED_COMPONENT_TYPES = ["service", "library"]

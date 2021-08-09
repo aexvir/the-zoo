@@ -1,8 +1,5 @@
 import pytest
 
-from zoo.repos.models import Repository
-from zoo.services.models import Service
-
 pytestmark = pytest.mark.django_db
 
 
@@ -16,7 +13,7 @@ def generate_services(service_factory):
         docs_url="https://docsurl",
         pagerduty_service="/services",
         slack_channel="https://slackchannel",
-        status="fixed",
+        lifecycle="fixed",
         repository__id=78,
         repository__remote_id=239,
         repository__owner="jasckson",
@@ -31,7 +28,7 @@ def generate_services(service_factory):
         docs_url="https://docsurl",
         pagerduty_service="/services",
         slack_channel="https://slackchannel",
-        status="fixed",
+        lifecycle="fixed",
         repository__id=48,
         repository__remote_id=99,
         repository__owner="colisn",
@@ -46,7 +43,7 @@ def generate_services(service_factory):
         docs_url="https://docsurl",
         pagerduty_service="/services",
         slack_channel="https://slackchannel",
-        status="fixed",
+        lifecycle="fixed",
         repository__id=234,
         repository__remote_id=9234,
         repository__owner="Daniel",
@@ -61,7 +58,7 @@ def generate_services(service_factory):
         docs_url="https://docsurl",
         pagerduty_service="/services",
         slack_channel="https://slackchannel",
-        status="fixed",
+        lifecycle="fixed",
         repository__id=3434,
         repository__remote_id=349,
         repository__owner="josh",
@@ -77,7 +74,7 @@ def generate_services(service_factory):
         docs_url="https://docsurl",
         pagerduty_service="/services",
         slack_channel="https://slackchannel",
-        status="fixed",
+        lifecycle="fixed",
         repository__id=4543,
         repository__remote_id=990,
         repository__owner="imosley",
@@ -96,7 +93,7 @@ def generate_services_with_environments(service_factory, environment_factory):
         docs_url="https://docsurl",
         pagerduty_service="/services",
         slack_channel="https://slackchannel",
-        status="fixed",
+        lifecycle="fixed",
         repository__id=78,
         repository__remote_id=239,
         repository__owner="jasckson",
@@ -118,39 +115,6 @@ def generate_services_with_environments(service_factory, environment_factory):
         service_urls=["https://serviceurl1", "https://serviceurl2"],
         dashboard_url="https://dashboardurl",
         health_check_url="https://healthcheckurl",
-    )
-
-
-@pytest.fixture
-def generate_services_with_links(service_factory, link_factory):
-    service = service_factory(
-        id=1,
-        name="martinez",
-        owner="michaelbennett",
-        impact="profit",
-        docs_url="https://docsurl",
-        pagerduty_service="/services",
-        slack_channel="https://slackchannel",
-        status="fixed",
-        repository__id=78,
-        repository__remote_id=239,
-        repository__owner="jasckson",
-        repository__name="thiwer",
-        repository__url="https://gitlab.com/thiwer/thiwer",
-    )
-    link_factory(
-        id=1,
-        service=service,
-        name="Datadog",
-        url="https://datadog.com",
-        icon="datadog",
-    )
-    link_factory(
-        id=2,
-        service=service,
-        name="Sentry",
-        url="https://sentry.com",
-        icon="Sentry",
     )
 
 
@@ -181,7 +145,7 @@ def test_all(snapshot, call_api, generate_services):
             id
             owner
             name
-            status
+            lifecycle
             impact
             slackChannel
             pagerdutyService
@@ -211,7 +175,7 @@ def test_with_repository(snapshot, call_api, generate_services):
             id
             name
             owner
-            status
+            lifecycle
             impact
             slackChannel
             pagerdutyService
@@ -247,7 +211,7 @@ def test_with_environment(snapshot, call_api, generate_services_with_environment
             id
             name
             owner
-            status
+            lifecycle
             impact
             slackChannel
             pagerdutyService
@@ -293,7 +257,7 @@ def test_first(snapshot, call_api, generate_services):
           node {
             id
             owner
-            status
+            lifecycle
             impact
             slackChannel
             pagerdutyService
@@ -322,7 +286,7 @@ def test_first_after(snapshot, call_api, generate_services):
           node {
             id
             owner
-            status
+            lifecycle
             impact
             slackChannel
             pagerdutyService
@@ -351,7 +315,7 @@ def test_last(snapshot, call_api, generate_services):
           node {
             id
             owner
-            status
+            lifecycle
             impact
             slackChannel
             pagerdutyService
@@ -380,57 +344,11 @@ def test_last_before(snapshot, call_api, generate_services):
           node {
             id
             owner
-            status
+            lifecycle
             impact
             slackChannel
             pagerdutyService
             docsUrl
-          }
-        }
-        pageInfo {
-            hasPreviousPage
-            hasNextPage
-            startCursor
-            endCursor
-        }
-      }
-    }
-    """
-    response = call_api(query)
-    snapshot.assert_match(response)
-
-
-def test_with_links(snapshot, call_api, generate_services_with_links):
-    query = """
-    query {
-      allServices {
-        totalCount
-        edges {
-          node {
-            id
-            name
-            owner
-            status
-            impact
-            slackChannel
-            pagerdutyService
-            docsUrl
-            allLinks {
-              totalCount
-              edges {
-                node {
-                  name
-                  url
-                  icon
-                }
-              }
-              pageInfo {
-                  hasPreviousPage
-                  hasNextPage
-                  startCursor
-                  endCursor
-              }
-            }
           }
         }
         pageInfo {

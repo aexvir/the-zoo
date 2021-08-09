@@ -1,5 +1,4 @@
 import re
-from enum import Enum
 
 from django.conf import settings
 from django.contrib.postgres import fields as pg_fields
@@ -8,18 +7,7 @@ from django.dispatch import receiver
 from django.urls import reverse
 from djangoql.schema import DjangoQLSchema
 
-
-class Status(Enum):
-    BETA = "beta"
-    PRODUCTION = "production"
-    DEPRECATED = "deprecated"
-    DISCONTINUED = "discontinued"
-
-
-class Impact(Enum):
-    PROFIT = "profit"
-    CUSTOMERS = "customers"
-    EMPLOYEES = "employees"
+from zoo.services.constants import Impact, Lifecycle
 
 
 class Library(models.Model):
@@ -29,8 +17,8 @@ class Library(models.Model):
 
     owner = pg_fields.CICharField(max_length=100)
     name = pg_fields.CICharField(max_length=100)
-    status = models.CharField(
-        choices=((item.value, item.value) for item in Status),
+    lifecycle = models.CharField(
+        choices=((item.value, item.value) for item in Lifecycle),
         null=True,
         blank=True,
         max_length=100,
@@ -101,5 +89,5 @@ class LibraryQLSchema(DjangoQLSchema):
 
     def get_fields(self, model):
         if isinstance(model, Library):
-            return ["name", "owner", "status", "impact", "library_url"]
+            return ["name", "owner", "lifecycle", "impact", "library_url"]
         return super().get_fields(model)

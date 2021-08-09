@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Status(Enum):
+class Lifecycle(Enum):
     BETA = "beta"
     PRODUCTION = "production"
     DEPRECATED = "deprecated"

@@ -1,5 +1,4 @@
 import '../style/service_detail.less'
-import jQuery from 'jquery/src/jquery'
 import 'fomantic-ui-css/semantic.min.js'
 import Mustache from 'mustache'
 import Vue from 'vue'

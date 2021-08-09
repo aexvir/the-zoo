@@ -2,7 +2,7 @@ import hashlib
 import itertools
 import tempfile
 from collections import namedtuple
-from typing import Dict
+from typing import Dict, List
 
 import structlog
 from celery import shared_task
@@ -11,16 +11,19 @@ from django.conf import settings
 from ..analytics.tasks import repo_analyzers
 from ..auditing import runner
 from ..auditing.check_discovery import CHECKS as AUDITING_CHECKS
+from ..entities.builder import EntityBuilder
+from ..entities.models import Entity, Link
+from ..libraries.models import Library
 from ..repos.models import Endpoint
 from ..services.constants import EnviromentType
 from ..services.models import Environment, Service
+from .entities_yaml import parse, validate
 from .exceptions import MissingFilesError, RepositoryNotFoundError
 from .github import get_repositories as get_github_repositories
 from .gitlab import get_project_enviroments
 from .gitlab import get_repositories as get_gitlab_repositories
 from .models import Repository, RepositoryEnvironment
 from .utils import download_repository, get_scm_module, openapi_definition
-from .zoo_yml import parse, validate
 
 log = structlog.get_logger()
 
@@ -156,29 +159,29 @@ def index_api(repository, repo_path):
 
 
 @shared_task
-def sync_zoo_file():
+def sync_entity_file():
     for project in itertools.chain(
         get_github_repositories(), get_gitlab_repositories()
     ):
         if settings.SYNC_REPOS_SKIP_FORKS and project["is_fork"]:
             continue
-        update_project_from_zoo_file.apply_async(args=project)
+        update_project_from_entity_file.apply_async(args=project)
 
 
 @shared_task
-def update_project_from_zoo_file(proj: Dict) -> None:
+def update_project_from_entity_file(proj: Dict) -> None:
     try:
-        content = get_zoo_file_content(proj)
+        content = get_entity_file_content(proj)
     except FileNotFoundError as err:
-        log.info("repos.sync_zoo_yml.file_not_found", error=err)
+        log.info("repos.sync_entity_yml.file_not_found", error=err)
     else:
         if not validate(content):
             return
-        update_or_create_service(parse(content), proj)
+        update_or_create_components(parse(content), proj)
 
 
-def update_or_create_service(data: Dict, proj: Dict) -> None:
-    # Skip processing the zoo file if the repository is not yet synced
+def update_or_create_components(data: List, proj: Dict) -> None:
+    # Skip processing the entity file if the repository is not yet synced
     try:
         repository = Repository.objects.get(
             remote_id=int(proj["id"]), provider=proj["provider"]
@@ -186,39 +189,22 @@ def update_or_create_service(data: Dict, proj: Dict) -> None:
     except Repository.DoesNotExist:
         return
 
-    service_defaults = {
-        "impact": data["impact"],
-        "status": data["status"],
-        "repository": repository,
-        "docs_url": data["docs_url"],
-        "slack_channel": data["slack_channel"],
-        "sentry_project": data["sentry_project"],
-        "sonarqube_project": data["sonarqube_project"],
-        "pagerduty_service": data["pagerduty_service"],
-        "tags": data["tags"],
-    }
+    def _do_cleanup():
+        affected_entities = Entity.objects.filter(source=repository)
+        Link.objects.filter(entity__in=affected_entities).delete()
+        Service.objects.filter(repository=repository).delete()
+        Library.objects.filter(repository=repository).delete()
+        Entity.objects.filter(source=repository).delete()
 
-    service, _ = Service.objects.update_or_create(
-        owner=data["owner"], name=data["name"], defaults=service_defaults
-    )
-
-    # Delete all environments as yaml file has precedence
-    Environment.objects.filter(service=service).delete()
-
-    # Add all environments
-    for env in data["environments"]:
-        e = Environment(service=service, name=env["name"])
-        e.dashboard_url = env["dashboard_url"]
-        e.service_urls = env["service_urls"]
-        e.health_check_url = env["health_check_url"]
-        e.save()
+    _do_cleanup()
+    entity_builder = EntityBuilder()
+    for component in data:
+        entity_builder.sync_entities(component, repository)
 
 
-def get_zoo_file_content(proj: Dict) -> str:
+def get_entity_file_content(proj: Dict) -> str:
     provider = get_scm_module(proj["provider"])
-    return provider.get_file_content(
-        proj["id"], settings.ZOO_YAML_FILE, settings.ZOO_YAML_DEFAULT_REF
-    )
+    return provider.get_file_content(proj["id"], "entities.yaml")
 
 
 def sync_enviroments_from_gitlab(repo: Repository):

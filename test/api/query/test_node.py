@@ -9,7 +9,7 @@ def test_service(snapshot, call_api, service_factory):
         id=10,
         owner="bradltwat",
         name="allen-nobles",
-        status="fixed",
+        lifecycle="fixed",
         impact="sales",
         slack_channel="https://gitlab.slack",
         pagerduty_service="sales/P019873X9",
@@ -23,7 +23,7 @@ def test_service(snapshot, call_api, service_factory):
                 id
                 owner
                 name
-                status
+                lifecycle
                 impact
                 slackChannel
                 pagerdutyService

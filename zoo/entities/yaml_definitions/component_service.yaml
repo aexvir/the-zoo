@@ -1,0 +1,118 @@
+---
+additionalProperties: false
+properties:
+  apiVersion:
+    type: string
+  kind:
+    enum:
+      - component
+    type: string
+  metadata:
+    properties:
+      description:
+        type:
+          - string
+      group:
+        properties:
+          maintainers:
+            items:
+              type: string
+            type: array
+          product_owner:
+            type: string
+          project_owner:
+            type: string
+        type: object
+      links:
+        items:
+          properties:
+            icon:
+              type:
+                - string
+            name:
+              type: string
+            url:
+              type: string
+          type: object
+        type:
+          - array
+      name:
+        type: string
+      label:
+        type: string
+      owner:
+        type: string
+      tags:
+        items:
+          type: string
+        type:
+          - array
+    type: object
+    required:
+      - name
+      - label
+      - owner
+  spec:
+    properties:
+      analysis:
+        items:
+          properties:
+            exclusions:
+              items:
+                type: string
+              type: array
+          type: object
+        type:
+          - array
+      environments:
+        items:
+          properties:
+            name:
+              type: string
+            dashboard_url:
+              type:
+                - string
+            health_check_url:
+              type:
+                - string
+            service_urls:
+              items:
+                type: string
+              type: array
+          type: object
+        type: array
+      impact:
+        enum:
+          - profit
+          - customers
+          - employees
+        type: string
+      integrations:
+        properties:
+          pagerduty_service:
+            type: string
+          sentry_project:
+            type: string
+          sonarqube_project:
+            type: string
+          slack_channel:
+            type: string
+        type: object
+      lifecycle:
+        enum:
+          - beta
+          - production
+          - deprecated
+          - discontinued
+          - fixed
+        type: string
+      type:
+        enum:
+          - service
+        type: string
+    type: object
+    required:
+      - type
+required:
+  - kind
+type: object

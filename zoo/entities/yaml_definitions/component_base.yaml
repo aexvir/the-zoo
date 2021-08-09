@@ -1,0 +1,62 @@
+---
+additionalProperties: false
+properties:
+  apiVersion:
+    type: string
+  kind:
+    enum:
+      - component
+    type: string
+  metadata:
+    properties:
+      description:
+        type: string
+      group:
+        properties:
+          maintainers:
+            items:
+              type: string
+            type: array
+          product_owner:
+            type: string
+          project_owner:
+            type: string
+        type: object
+      links:
+        items:
+          properties:
+            icon:
+              type: string
+            name:
+              type: string
+            url:
+              type: string
+          type: object
+        type: array
+      name:
+        type: string
+      label:
+        type: string
+      owner:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+    type: object
+    required:
+      - name
+      - label
+      - owner
+  spec:
+    properties:
+      type:
+        enum:
+          - database
+        type: string
+    type: object
+    required:
+      - type
+type: object
+required:
+  - kind

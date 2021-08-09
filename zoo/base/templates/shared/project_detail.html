@@ -10,8 +10,8 @@
 {{ block.super }}
 
 <div class="flex-horizontal">
-  {% if object.status %}
-  <a class="ui {% label_color 'status' object.status %} large circular regular-font label">status:{{ object.status }}</a>
+  {% if object.lifecycle %}
+  <a class="ui {% label_color 'lifecycle' object.lifecycle %} large circular regular-font label">lifecycle:{{ object.lifecycle }}</a>
   {% endif %}
 
   {% if object.impact %}
@@ -21,20 +21,6 @@
   {% block navbuttons %}
   {% endblock %}
 
-  <div class="ui transparent project-actions floating right center pointing fade dropdown icon button">
-    <i class="ellipsis vertical icon"></i>
-    <div class="large left menu">
-        <div class="item">
-          <a href="{% url project_update_view object.owner_slug object.name_slug %}" class="ui invisible button"><i class="edit icon"></i> Edit</a>
-        </div>
-        <div class="item">
-          <form method="post" id="project-delete-form" action="{% url project_delete_view object.owner_slug object.name_slug %}">
-            {% csrf_token %}
-            <button class="ui invisible button" type="submit"><i class="red trash icon"></i> Delete</button>
-          </form>
-        </div>
-    </div>
-  </div>
 </div>
 
 {% endblock %}

@@ -18,8 +18,11 @@ from zoo.api.models import ApiToken
 from zoo.auditing.check_discovery import Kind
 from zoo.auditing.models import Issue
 from zoo.datacenters.models import InfraNode
+from zoo.entities.models import Entity, Group, Link
+from zoo.libraries.models import Library
 from zoo.repos.models import Repository, RepositoryEnvironment
-from zoo.services.models import Environment, Impact, Link, Service, Status, Tier
+from zoo.services.constants import Lifecycle
+from zoo.services.models import Environment, Impact, Service, Tier
 
 
 class RepositoryFactory(DjangoModelFactory):
@@ -70,7 +73,9 @@ class ServiceFactory(DjangoModelFactory):
 
     owner = Faker("user_name")
     name = Faker("slug")
-    status = LazyFunction(lambda: choice([item.value for item in Status] + [None]))
+    lifecycle = LazyFunction(
+        lambda: choice([item.value for item in Lifecycle] + [None])
+    )
     impact = LazyFunction(lambda: choice([item.value for item in Impact] + [None]))
     tier = SubFactory(TierFactory, level=LazyFunction(lambda: randint(1, 4)))
     repository = SubFactory(
@@ -86,6 +91,9 @@ class EnvironmentFactory(DjangoModelFactory):
 
     name = Faker("domain_word")
     service = SubFactory(ServiceFactory)
+    health_check_url = Faker("uri")
+    dashboard_url = Faker("uri")
+    service_urls = [Faker("uri"), Faker("uri")]
 
 
 class UserFactory(DjangoModelFactory):
@@ -133,7 +141,6 @@ class LinkFactory(DjangoModelFactory):
 
     name = Faker("domain_word")
     url = Faker("uri")
-    service = SubFactory(ServiceFactory)
 
 
 class KindFactory(Factory):
@@ -153,3 +160,74 @@ class InfraNodeFactory(Factory):
 
     kind = Faker("domain_word")
     value = Faker("slug")
+
+
+class GroupFactory(DjangoModelFactory):
+    class Meta:
+        model = Group
+
+    product_owner = Faker("user_name")
+    project_owner = Faker("user_name")
+
+
+class LibraryFactory(DjangoModelFactory):
+    class Meta:
+        model = Library
+
+    owner = Faker("user_name")
+    name = Faker("domain_word")
+    lifecycle = LazyFunction(
+        lambda: choice([item.value for item in Lifecycle] + [None])
+    )
+    impact = LazyFunction(lambda: choice([item.value for item in Impact] + [None]))
+    slack_channel = Faker("domain_word")
+    sonarqube_project = Faker("domain_word")
+    repository = SubFactory(RepositoryFactory)
+
+
+class ComponentBaseFactory(DjangoModelFactory):
+    class Meta:
+        model = Entity
+
+    name = Faker("domain_word")
+    label = Faker("domain_word")
+    type = "database"
+    description = Faker("paragraph")
+    kind = "component"
+    owner = Faker("user_name")
+    source = SubFactory(RepositoryFactory)
+    service = None
+    library = None
+    group = SubFactory(GroupFactory)
+
+
+class ComponentServiceFactory(DjangoModelFactory):
+    class Meta:
+        model = Entity
+
+    name = Faker("domain_word")
+    label = Faker("domain_word")
+    type = "service"
+    description = Faker("paragraph")
+    kind = Faker("domain_word")
+    owner = Faker("user_name")
+    source = SubFactory(RepositoryFactory)
+    service = SubFactory(ServiceFactory)
+    library = None
+    group = SubFactory(GroupFactory)
+
+
+class ComponentLibraryFactory(DjangoModelFactory):
+    class Meta:
+        model = Entity
+
+    name = Faker("domain_word")
+    label = Faker("domain_word")
+    type = Faker("domain_word")
+    description = Faker("paragraph")
+    kind = Faker("domain_word")
+    owner = Faker("user_name")
+    source = SubFactory(RepositoryFactory)
+    service = None
+    library = SubFactory(LibraryFactory)
+    group = SubFactory(GroupFactory)

@@ -8,12 +8,6 @@
   {% endwith %}
 {% endblock %}
 
-{% block navtitle %}
-  {% with project_delete_view='library_delete' icon='book' to_url='/libraries' header=object.name|add:' library' project_update_view='library_update' subheader='owned by '|add:object.owner %}
-    {{ block.super }}
-  {% endwith %}
-{% endblock %}
-
 {% block content %}
   {% with project_type='libraries' project_type_singular='library' project_checklist_view='library_checklist' %}
     {{ block.super }}

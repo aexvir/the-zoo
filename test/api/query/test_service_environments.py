@@ -16,7 +16,7 @@ def generate_environments(service_factory, environment_factory):
         docs_url="https://docsurl",
         pagerduty_service="sales/P019873X9",
         slack_channel="https://slackchannel",
-        status="fixed",
+        lifecycle="fixed",
     )
     environment_factory(
         id=1,

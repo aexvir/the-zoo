@@ -26,7 +26,7 @@ class GlobalChecklistsView(ListView):
         return (
             super()
             .get_queryset()
-            .filter(status=service_models.Status.BETA.value)
+            .filter(lifecycle=service_models.Lifecycle.BETA.value)
             .prefetch_related("checkmarks")
         )
 
@@ -62,7 +62,7 @@ class ServiceChecklistView(TemplateView):
             service = service_models.Service.objects.get(
                 owner_slug=service_owner_slug,
                 name_slug=service_name_slug,
-                status=service_models.Status.BETA.value,
+                lifecycle=service_models.Lifecycle.BETA.value,
             )
         except service_models.Service.DoesNotExist:
             raise Http404

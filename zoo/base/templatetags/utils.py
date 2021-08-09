@@ -12,7 +12,8 @@ from django.forms import BaseForm
 from ...analytics.models import DependencyType, DependencyUsage
 from ...auditing.check_discovery import Effort, Severity
 from ...objectives.models import Objective
-from ...services.models import Impact, SentryIssueCategory, Status
+from ...services.constants import Lifecycle
+from ...services.models import Impact, SentryIssueCategory
 
 register = template.Library()
 
@@ -32,11 +33,11 @@ known_icons = {
 }
 
 known_colors = {
-    "status": {
-        Status.BETA.value: "yellow",
-        Status.DEPRECATED.value: "red",
-        Status.DISCONTINUED.value: "grey",
-        Status.PRODUCTION.value: "green",
+    "lifecycle": {
+        Lifecycle.BETA.value: "yellow",
+        Lifecycle.DEPRECATED.value: "red",
+        Lifecycle.DISCONTINUED.value: "grey",
+        Lifecycle.PRODUCTION.value: "green",
     },
     "impact": {
         Impact.CUSTOMERS.value: "red",
